@@ -30,3 +30,15 @@ func TestLoadROMShouldFailWithWrongFilename(t *testing.T) {
 		assert.Fail(t, "Error cant be nil")
 	}
 }
+
+func TestCPUShouldReset(t *testing.T) {
+	cpu := NewCPU()
+	_, err := cpu.LoadROM("testdata/ParticleDemo.ch8")
+	if err != nil {
+		assert.Fail(t, "LoadROM failed with %v", err)
+	}
+	cpu.i = 42
+	cpu.Reset()
+	ncpu := NewCPU()
+	assert.Equal(t, ncpu, cpu, "Cpu needs to be same as ncpu(new) after reset")
+}

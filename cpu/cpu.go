@@ -54,3 +54,7 @@ func (c *CPU) LoadFontSet() {
 		c.memory[i] = fontset[i]
 	}
 }
+
+func (c *CPU) Reset() {
+	c.LoadFontSet()
+}
