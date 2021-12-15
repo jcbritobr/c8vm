@@ -43,6 +43,17 @@ func TestCPUShouldReset(t *testing.T) {
 	assert.Equal(t, ncpu, cpu, "Cpu needs to be same as ncpu(new) after reset")
 }
 
+func TestShouldReturnFromSubrotine(t *testing.T) {
+	cpu := NewCPU()
+	cpu.stack[cpu.sp] = 0x30
+	cpu.sp = cpu.sp + 1
+	cpu.memory[0x200] = 0x00
+	cpu.memory[0x201] = 0xee
+	cpu.RunCycle()
+	assert.Equal(t, uint16(0x30), cpu.pc)
+	assert.Equal(t, uint16(0x00), cpu.sp)
+}
+
 func TestShouldClearDisplay(t *testing.T) {
 	cpu := NewCPU()
 	cpu.memory[0x200] = 0x00
@@ -55,4 +66,40 @@ func TestShouldClearDisplay(t *testing.T) {
 			assert.Equal(t, byte(0), cpu.display[x][y])
 		}
 	}
+}
+
+func TestShouldJumpToNNN(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x10
+	cpu.memory[0x201] = 0xff
+	cpu.RunCycle()
+	assert.Equal(t, uint16(0xff), cpu.pc)
+}
+
+func TestShouldCallAddr(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x26
+	cpu.memory[0x201] = 0x93
+	cpu.RunCycle()
+	assert.Equal(t, uint16(0x01), cpu.sp)
+	assert.Equal(t, uint16(0x202), cpu.stack[cpu.sp-1])
+	assert.Equal(t, uint16(0x693), cpu.pc)
+}
+
+func TestShouldSkipIfVxIsNNIsTrue(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x3b
+	cpu.memory[0x201] = 0x54
+	cpu.v[0xb] = 0x54
+	cpu.RunCycle()
+	assert.Equal(t, uint16(0x204), cpu.pc)
+}
+
+func TestShouldNotSkipIfVxIsNNIsFalse(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x31
+	cpu.memory[0x201] = 0x54
+	cpu.v[0x1] = 0x95
+	cpu.RunCycle()
+	assert.Equal(t, uint16(0x202), cpu.pc)
 }

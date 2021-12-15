@@ -126,5 +126,17 @@ func (c *CPU) RunCycle() {
 			c.pc = c.stack[c.sp-1]
 			c.sp = c.sp - 1
 		}
+	case 0x1000:
+		c.pc = opcode & 0x0fff
+	case 0x2000:
+		c.stack[c.sp] = c.pc
+		c.sp = c.sp + 1
+		c.pc = opcode & 0x0fff
+	case 0x3000:
+		nn := byte(opcode & 0x00ff)
+		register := (opcode & 0x0f00) >> 8
+		if c.v[register] == nn {
+			c.pc = c.pc + 2
+		}
 	}
 }
