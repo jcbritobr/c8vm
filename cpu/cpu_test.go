@@ -42,3 +42,17 @@ func TestCPUShouldReset(t *testing.T) {
 	ncpu := NewCPU()
 	assert.Equal(t, ncpu, cpu, "Cpu needs to be same as ncpu(new) after reset")
 }
+
+func TestShouldClearDisplay(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x00
+	cpu.memory[0x201] = 0xe0
+	cpu.display[0][0] = 0x1
+	cpu.display[9][23] = 0x1
+	cpu.RunCycle()
+	for x := 0x00; x < 0x20; x++ {
+		for y := 0x00; y < 0x40; y++ {
+			assert.Equal(t, byte(0), cpu.display[x][y])
+		}
+	}
+}
