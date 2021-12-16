@@ -99,7 +99,81 @@ func TestShouldNotSkipIfVxIsNNIsFalse(t *testing.T) {
 	cpu := NewCPU()
 	cpu.memory[0x200] = 0x31
 	cpu.memory[0x201] = 0x54
-	cpu.v[0x1] = 0x95
+	cpu.v[1] = 0x95
 	cpu.RunCycle()
 	assert.Equal(t, uint16(0x202), cpu.pc)
+}
+
+func TestShouldSkipIfVxIsNotNNIsTrue(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x4b
+	cpu.memory[0x201] = 0x54
+	cpu.v[0xb] = 0x54
+	cpu.RunCycle()
+	assert.Equal(t, uint16(0x202), cpu.pc)
+}
+
+func TestShouldSkipIfVxIsNotNNIsFalse(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x41
+	cpu.memory[0x201] = 0x54
+	cpu.v[0x1] = 0x95
+	cpu.RunCycle()
+	assert.Equal(t, uint16(0x204), cpu.pc)
+}
+
+func TestShouldSkipIfVxIsVyIsTrue(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x53
+	cpu.memory[0x201] = 0xb0
+	cpu.v[0x3] = 0x96
+	cpu.v[0xb] = 0x96
+	cpu.RunCycle()
+	assert.Equal(t, uint16(0x204), cpu.pc)
+}
+
+func TestShouldNotSkipIfVxIsVyIsFalse(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x53
+	cpu.memory[0x201] = 0xb0
+	cpu.v[0x3] = 0x94
+	cpu.v[0xb] = 0x96
+	cpu.RunCycle()
+	assert.Equal(t, uint16(0x202), cpu.pc)
+}
+
+func TestShouldSetVxToNN(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x63
+	cpu.memory[0x201] = 0x94
+	cpu.RunCycle()
+	assert.Equal(t, byte(0x94), cpu.v[0x3])
+}
+
+func TestShouldAddByteToVx(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x7c
+	cpu.memory[0x201] = 0xfe
+	cpu.v[0xc] = 0x1
+	cpu.RunCycle()
+	assert.Equal(t, byte(0xff), cpu.v[0xc])
+}
+
+func TestShouldAddByteToVxOverflow(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x7c
+	cpu.memory[0x201] = 0xff
+	cpu.v[0xc] = 0x90
+	cpu.RunCycle()
+	assert.Equal(t, byte(0x8f), cpu.v[0xc])
+}
+
+// Changed the test and may cause issues to vm. Pay attention
+func TestStoreVyInVx(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x8a
+	cpu.memory[0x201] = 0xb0
+	cpu.v[0xb] = 0x90
+	cpu.RunCycle()
+	assert.Equal(t, byte(0x90), cpu.v[0xa])
 }

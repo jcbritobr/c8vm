@@ -138,5 +138,28 @@ func (c *CPU) RunCycle() {
 		if c.v[register] == nn {
 			c.pc = c.pc + 2
 		}
+	case 0x4000:
+		nn := byte(opcode & 0x00ff)
+		register := (opcode & 0x0f00) >> 8
+		if c.v[register] != nn {
+			c.pc = c.pc + 2
+		}
+	case 0x5000:
+		registerX := (opcode & 0x0f00) >> 8
+		registerY := (opcode & 0x00f0) >> 4
+		if c.v[registerX] == c.v[registerY] {
+			c.pc = c.pc + 2
+		}
+	case 0x7000:
+		registerX := (opcode & 0x0f00) >> 8
+		value := byte(opcode & 0x00ff)
+		c.v[registerX] = c.v[registerX] + value
+	case 0x8000:
+		switch getLastNibble(opcode) {
+		case 0x0000:
+			registerX := (opcode & 0x0f00) >> 8
+			registerY := (opcode & 0x00F0) >> 4
+			c.v[registerX] = c.v[registerY]
+		}
 	}
 }

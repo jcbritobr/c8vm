@@ -1,5 +1,11 @@
 # C8VM is a chip 8 virtual machine built using Go language.
 
+### **Memory**
+The Chip-8 language is capable of accessing up to 4KB (4,096 bytes) of RAM, from location 0x000 (0) to 0xFFF (4095). The first 512 bytes, from 0x000 to 0x1FF, are where the original interpreter was located, and should not be used by programs.
+Most Chip-8 programs start at location 0x200 (512), but some begin at 0x600 (1536). Programs beginning at 0x600 are intended for the ETI 660 computer.
+
+![Memory Map](images/chip8memorymap.png)
+
 ### **Instruction Set**
 The following table contains all thirty-five instructions in the CHIP-8 instruction set. **NNN** refers to a hexadecimal memory address. **NN** refers to a hexadecimal byte. **N** refers to a hexadecimal nibble. **X** and **Y** refer to registers.
 
