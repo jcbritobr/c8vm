@@ -168,12 +168,32 @@ func TestShouldAddByteToVxOverflow(t *testing.T) {
 	assert.Equal(t, byte(0x8f), cpu.v[0xc])
 }
 
-// Changed the test and may cause issues to vm. Pay attention
-func TestStoreVyInVx(t *testing.T) {
+// Changed the test and it may cause issues to vm. Pay attention
+func TestShouldStoreVyInVx(t *testing.T) {
 	cpu := NewCPU()
 	cpu.memory[0x200] = 0x8a
 	cpu.memory[0x201] = 0xb0
 	cpu.v[0xb] = 0x90
 	cpu.RunCycle()
 	assert.Equal(t, byte(0x90), cpu.v[0xa])
+}
+
+func TestShouldVxOrVy(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x8a
+	cpu.memory[0x201] = 0xc1
+	cpu.v[0xa] = 0x11
+	cpu.v[0xc] = 0x43
+	cpu.RunCycle()
+	assert.Equal(t, byte(0x53), cpu.v[0xa])
+}
+
+func TestShouldVxAndVy(t *testing.T) {
+	cpu := NewCPU()
+	cpu.memory[0x200] = 0x8a
+	cpu.memory[0x201] = 0xc2
+	cpu.v[0xa] = 0x34
+	cpu.v[0xc] = 0xd3
+	cpu.RunCycle()
+	assert.Equal(t, byte(0x10), cpu.v[0xa])
 }

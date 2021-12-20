@@ -150,6 +150,9 @@ func (c *CPU) RunCycle() {
 		if c.v[registerX] == c.v[registerY] {
 			c.pc = c.pc + 2
 		}
+	case 0x6000:
+		registerX := (opcode & 0x0f00) >> 8
+		c.v[registerX] = byte(opcode & 0x00ff)
 	case 0x7000:
 		registerX := (opcode & 0x0f00) >> 8
 		value := byte(opcode & 0x00ff)
@@ -160,6 +163,14 @@ func (c *CPU) RunCycle() {
 			registerX := (opcode & 0x0f00) >> 8
 			registerY := (opcode & 0x00F0) >> 4
 			c.v[registerX] = c.v[registerY]
+		case 0x0001:
+			registerX := (opcode & 0x0f00) >> 8
+			registerY := (opcode & 0x00F0) >> 4
+			c.v[registerX] = c.v[registerX] | c.v[registerY]
+		case 0x0002:
+			registerX := (opcode & 0x0f00) >> 8
+			registerY := (opcode & 0x00F0) >> 4
+			c.v[registerX] = c.v[registerX] & c.v[registerY]
 		}
 	}
 }
